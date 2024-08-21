@@ -19,6 +19,11 @@ _opcode_testserial_verify   =   'op_sertest_verify'
 
 _opcode_testi2c			    =   'op_i2ctest'
 _opcode_testi2c_verify      =   'op_i2ctest_verify'
+_opcode_testpwm_start		=   'op_pwmteststart'
+_opcode_testpwm_stop		=   'op_pwmteststop'
+_opcode_testpwm_verify		=   'op_pwmtest_verify'
+_opcode_testio		        =   'op_iotest'
+_opcode_testio_verify		=   'op_iotest_verify'
 
 class Ui_MainWindow(object):
 
@@ -31,6 +36,7 @@ class Ui_MainWindow(object):
 
         self.comport = QSerialPort()
         self.bConnectionStatus = False
+        self.bIsPWMEnabled = False
         
         self.centralwidget = QtWidgets.QWidget(parent=MainWindow)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Expanding)
@@ -51,11 +57,11 @@ class Ui_MainWindow(object):
         self.pgPhase1.setObjectName("pgPhase1")
         
         self.label = QtWidgets.QLabel(parent=self.pgPhase1)
-        self.label.setGeometry(QtCore.QRect(17, 10, 91, 20))
+        self.label.setGeometry(QtCore.QRect(17, 5, 91, 30))
         self.label.setObjectName("label")
         
         self.cmbComportName = QtWidgets.QComboBox(parent=self.pgPhase1)
-        self.cmbComportName.setGeometry(QtCore.QRect(130, 10, 101, 20))
+        self.cmbComportName.setGeometry(QtCore.QRect(130, 5, 101, 30))
         self.cmbComportName.setObjectName("cmbComport")
         
         self.btnRefComName = QtWidgets.QPushButton(parent=self.pgPhase1)
@@ -67,7 +73,7 @@ class Ui_MainWindow(object):
         self.btnConnect.setObjectName("btnConnect")
                 
         self.lblConnectionStatus = QtWidgets.QLabel(parent=self.pgPhase1)
-        self.lblConnectionStatus.setGeometry(QtCore.QRect(460, 10, 131, 20))
+        self.lblConnectionStatus.setGeometry(QtCore.QRect(460, 5, 131, 30))
         self.lblConnectionStatus.setObjectName("lblConnectionStatus")
         
         self.label_comtest = QtWidgets.QLabel(parent=self.pgPhase1)
@@ -118,6 +124,65 @@ class Ui_MainWindow(object):
         self.rbIICFailed.setGeometry(QtCore.QRect(560, 95, 82, 30))
         self.rbIICFailed.setObjectName("rbIICFailed")
 
+        self.lblpwm = QtWidgets.QLabel(parent=self.pgPhase1)
+        self.lblpwm.setGeometry(QtCore.QRect(30, 140, 91, 30))
+        self.lblpwm.setObjectName("lblpwm")
+
+        self.btnCheckPWM = QtWidgets.QPushButton(parent=self.pgPhase1)
+        self.btnCheckPWM.setGeometry(QtCore.QRect(180, 140, 141, 30))
+        self.btnCheckPWM.setObjectName("btnCheckPWM")
+        
+        self.rbPWMNotest = QtWidgets.QRadioButton(parent=self.pgPhase1)
+        self.rbPWMNotest.setEnabled(False)
+        self.rbPWMNotest.setGeometry(QtCore.QRect(360, 140, 82, 30))
+        self.rbPWMNotest.setChecked(False)
+        self.rbPWMNotest.setObjectName("rbPWMNotest")
+        
+        self.rbPWMFailed = QtWidgets.QRadioButton(parent=self.pgPhase1)
+        self.rbPWMFailed.setEnabled(False)
+        self.rbPWMFailed.setGeometry(QtCore.QRect(560, 140, 82, 30))
+        self.rbPWMFailed.setObjectName("rbPWMFailed")
+        
+        self.rbPWMPass = QtWidgets.QRadioButton(parent=self.pgPhase1)
+        self.rbPWMPass.setEnabled(False)
+        self.rbPWMPass.setGeometry(QtCore.QRect(460, 140, 82, 30))
+        self.rbPWMPass.setStyleSheet("")
+        self.rbPWMPass.setObjectName("rbPWMPass")
+        
+        self.trPWMSpec = QtWidgets.QTreeWidget(parent=self.pgPhase1)
+        self.trPWMSpec.setGeometry(QtCore.QRect(210, 185, 321, 80))
+        self.trPWMSpec.setColumnCount(3)
+        self.trPWMSpec.setObjectName("trPWMSpec")
+        self.trPWMSpec.headerItem().setTextAlignment(0, QtCore.Qt.AlignmentFlag.AlignCenter)
+        self.trPWMSpec.headerItem().setTextAlignment(1, QtCore.Qt.AlignmentFlag.AlignCenter)
+        self.trPWMSpec.headerItem().setTextAlignment(2, QtCore.Qt.AlignmentFlag.AlignCenter)
+        item_0 = QtWidgets.QTreeWidgetItem(self.trPWMSpec)
+        item_0 = QtWidgets.QTreeWidgetItem(self.trPWMSpec)
+        item_0 = QtWidgets.QTreeWidgetItem(self.trPWMSpec)
+
+        self.label_IOtest = QtWidgets.QLabel(parent=self.pgPhase1)
+        self.label_IOtest.setGeometry(QtCore.QRect(30, 280, 150, 30))
+        self.label_IOtest.setObjectName("label_IOtest")
+
+        self.btnCheckIO = QtWidgets.QPushButton(parent=self.pgPhase1)
+        self.btnCheckIO.setGeometry(QtCore.QRect(180, 280, 141, 30))
+        self.btnCheckIO.setObjectName("btnCheckIO")    
+        
+        self.rbIONotest = QtWidgets.QRadioButton(parent=self.pgPhase1)
+        self.rbIONotest.setEnabled(False)
+        self.rbIONotest.setGeometry(QtCore.QRect(360, 280, 82, 30))
+        self.rbIONotest.setChecked(True)
+        self.rbIONotest.setObjectName("rbIONotest")
+        
+        self.rbIOPass = QtWidgets.QRadioButton(parent=self.pgPhase1)
+        self.rbIOPass.setEnabled(False)
+        self.rbIOPass.setGeometry(QtCore.QRect(460, 280, 82, 30))
+        self.rbIOPass.setObjectName("rbIOPass")
+        
+        self.rbIOFailed = QtWidgets.QRadioButton(parent=self.pgPhase1)
+        self.rbIOFailed.setEnabled(False)
+        self.rbIOFailed.setGeometry(QtCore.QRect(560, 280, 82, 30))
+        self.rbIOFailed.setObjectName("rbIOFailed")
             
             #RAISE COMPONENTS#
         self.label.raise_()
@@ -135,7 +200,17 @@ class Ui_MainWindow(object):
         self.rbIICFailed.raise_()
         self.rbIICNotest.raise_()
         self.tbxPages.addItem(self.pgPhase1, "")
-        
+        self.lblpwm.raise_()
+        self.btnCheckPWM.raise_()
+        self.rbPWMFailed.raise_()
+        self.rbPWMNotest.raise_()
+        self.rbPWMPass.raise_()
+        self.trPWMSpec.raise_()
+        self.btnCheckIO.raise_()
+        self.rbIOPass.raise_()
+        self.rbIOFailed.raise_()
+        self.rbIONotest.raise_()
+
         ## SECOND PAGE
         self.pgPhase2 = QtWidgets.QWidget()
         self.pgPhase2.setGeometry(QtCore.QRect(0, 0, 800, 465))
@@ -194,6 +269,8 @@ class Ui_MainWindow(object):
         self.btnCheckIIC.clicked.connect(self.TestIICPressed)
         self.btnRefComName.clicked.connect(self.RefreshComportName)
         self.comport.readyRead.connect(self.readFromPort)
+        self.btnCheckPWM.clicked.connect(self.TestPWMPressed)
+        self.btnCheckIO.clicked.connect(self.TestIOPressed)
 
 
     def retranslateUi(self, MainWindow):
@@ -222,6 +299,31 @@ class Ui_MainWindow(object):
         self.menuHelp.setTitle(_translate("MainWindow", "Help"))
         self.actionExit.setText(_translate("MainWindow", "Exit"))
         self.actionAbout.setText(_translate("MainWindow", "About"))
+        self.lblpwm.setText(_translate("MainWindow", "Generate PWM"))
+        self.btnCheckPWM.setText(_translate("MainWindow", "Start Generate PWM"))
+        self.rbPWMFailed.setText(_translate("MainWindow", "Failed"))
+        self.rbPWMNotest.setText(_translate("MainWindow", "Not Tested"))
+        self.rbPWMPass.setText(_translate("MainWindow", "Passed"))
+        self.trPWMSpec.headerItem().setText(0, _translate("MainWindow", "CHANNEL"))
+        self.trPWMSpec.headerItem().setText(1, _translate("MainWindow", "FREQUENCY"))
+        self.trPWMSpec.headerItem().setText(2, _translate("MainWindow", "DUTY CYCLE"))
+        __sortingEnabled = self.trPWMSpec.isSortingEnabled()
+        self.trPWMSpec.setSortingEnabled(False)
+        self.trPWMSpec.topLevelItem(0).setText(0, _translate("MainWindow", "1"))
+        self.trPWMSpec.topLevelItem(0).setText(1, _translate("MainWindow", "50 HZ"))
+        self.trPWMSpec.topLevelItem(0).setText(2, _translate("MainWindow", "50%"))
+        self.trPWMSpec.topLevelItem(1).setText(0, _translate("MainWindow", "2"))
+        self.trPWMSpec.topLevelItem(1).setText(1, _translate("MainWindow", "50 HZ"))
+        self.trPWMSpec.topLevelItem(1).setText(2, _translate("MainWindow", "25%"))
+        self.trPWMSpec.topLevelItem(2).setText(0, _translate("MainWindow", "3"))
+        self.trPWMSpec.topLevelItem(2).setText(1, _translate("MainWindow", "50 HZ"))
+        self.trPWMSpec.topLevelItem(2).setText(2, _translate("MainWindow", "75%"))
+        self.trPWMSpec.setSortingEnabled(__sortingEnabled)
+        self.label_IOtest.setText(_translate("MainWindow", "Test IO Ports"))
+        self.btnCheckIO.setText(_translate("MainWindow", "Test IO"))
+        self.rbIONotest.setText(_translate("MainWindow", "Not Tested"))
+        self.rbIOPass.setText(_translate("MainWindow", "Passed"))
+        self.rbIOFailed.setText(_translate("MainWindow", "Failed"))
 
     def initiaLizeComponents(self,MainWindow):
         self.RefreshComportName(MainWindow)
@@ -261,6 +363,23 @@ class Ui_MainWindow(object):
         self.sendFromPort(request)
         self.btnCheckIIC.setEnabled(False)
 
+    def TestPWMPressed(self, MainWindow):
+        if self.bIsPWMEnabled == False :
+            request = _opcode_testpwm_start
+            self.btnCheckPWM.setText('Stop Generate PWM')
+            self.bIsPWMEnabled = True
+        else :
+            request = _opcode_testpwm_stop
+            self.btnCheckPWM.setText('Start Generate PWM')
+            self.bIsPWMEnabled = False
+        self.sendFromPort(request)
+        self.btnCheckPWM.setEnabled(False)
+    
+    def TestIOPressed(self, MainWindow):
+        request = _opcode_testio
+        self.sendFromPort(request)
+        self.btnCheckIO.setEnabled(False)
+
     def sendFromPort(self, text):
         self.comport.write( text.encode() )
     
@@ -273,11 +392,24 @@ class Ui_MainWindow(object):
                 self.rbConPass.setStyleSheet("color : green")
                 self.rbConFailed.setStyleSheet("color : gray")
                 self.btnCheckConnection.setEnabled(True)
+            
             if strRxData == _opcode_testi2c_verify :
                 self.rbIICPass.setChecked(True)
                 self.rbIICPass.setStyleSheet("color : green")
                 self.rbIICFailed.setStyleSheet("color : gray")
                 self.btnCheckIIC.setEnabled(True)
+            
+            if strRxData == _opcode_testpwm_verify :
+                self.rbPWMPass.setChecked(True)
+                self.rbPWMPass.setStyleSheet("color : green")
+                self.rbPWMFailed.setStyleSheet("color : gray")
+                self.btnCheckPWM.setEnabled(True)
+
+            if strRxData == _opcode_testio_verify :
+                self.rbIOPass.setChecked(True)
+                self.rbIOPass.setStyleSheet("color : green")
+                self.rbIOFailed.setStyleSheet("color : gray")
+                self.btnCheckIO.setEnabled(True)
 
     def RefreshComportName(self, MainWindow):
         self.cmbComportName.clear()
